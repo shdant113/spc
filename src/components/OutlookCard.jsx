@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { useSPCOutlook } from '../hooks/useSPCOutlook';
 import { getNextIssuanceTime } from '../utils/outlookSchedule';
 import './OutlookCard.css';
 
 export const OutlookCard = ({ day }) => {
   const [selectedView, setSelectedView] = useState('categorical');
-  const [isZoomed, setIsZoomed] = useState(false);
+  const transformRef = useRef(null);
   const outlook = useSPCOutlook(day);
 
   // Auto-select first available view when outlook data loads
@@ -17,6 +18,13 @@ export const OutlookCard = ({ day }) => {
       else if (outlook.hail) setSelectedView('hail');
     }
   }, [outlook, selectedView]);
+
+  // Reset zoom when view changes
+  useEffect(() => {
+    if (transformRef.current) {
+      transformRef.current.resetTransform();
+    }
+  }, [selectedView, outlook[selectedView]]);
 
   const getTitle = () => {
     return `Day ${day} Convective Outlook`;
@@ -48,16 +56,54 @@ export const OutlookCard = ({ day }) => {
     }
 
     return (
-      <img 
-        src={imageUrl} 
-        alt={`Day ${day} ${selectedView} outlook`}
-        className={`outlook-image ${isZoomed ? 'zoomed' : ''}`}
-        onClick={() => setIsZoomed(!isZoomed)}
-        onError={(e) => {
-          e.target.style.display = 'none';
-          e.target.nextSibling.style.display = 'block';
+      <TransformWrapper
+        ref={transformRef}
+        initialScale={1}
+        minScale={1}
+        maxScale={4}
+        doubleClick={{ 
+          disabled: false,
+          mode: 'reset',
+          animationTime: 200
         }}
-      />
+        pinch={{ 
+          disabled: false
+        }}
+        wheel={{ 
+          disabled: false,
+          step: 0.3 
+        }}
+        panning={{ 
+          disabled: false 
+        }}
+        smooth={false}
+        alignmentAnimation={{
+          disabled: true
+        }}
+      >
+        <TransformComponent
+          wrapperStyle={{
+            width: '100%',
+            height: '100%',
+          }}
+          contentStyle={{
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <img 
+            src={imageUrl} 
+            alt={`Day ${day} ${selectedView} outlook`}
+            className="outlook-image"
+            onError={(e) => {
+              e.target.style.display = 'none';
+            }}
+          />
+        </TransformComponent>
+      </TransformWrapper>
     );
   };
 
@@ -110,10 +156,7 @@ export const OutlookCard = ({ day }) => {
         {outlook.categorical && (
           <button 
             className={selectedView === 'categorical' ? 'active' : ''}
-            onClick={() => {
-              setSelectedView('categorical');
-              setIsZoomed(false);
-            }}
+            onClick={() => setSelectedView('categorical')}
           >
             Categorical
           </button>
@@ -121,10 +164,7 @@ export const OutlookCard = ({ day }) => {
         {outlook.tornado && (
           <button 
             className={selectedView === 'tornado' ? 'active' : ''}
-            onClick={() => {
-              setSelectedView('tornado');
-              setIsZoomed(false);
-            }}
+            onClick={() => setSelectedView('tornado')}
           >
             Tornado
           </button>
@@ -132,10 +172,7 @@ export const OutlookCard = ({ day }) => {
         {outlook.wind && (
           <button 
             className={selectedView === 'wind' ? 'active' : ''}
-            onClick={() => {
-              setSelectedView('wind');
-              setIsZoomed(false);
-            }}
+            onClick={() => setSelectedView('wind')}
           >
             Wind
           </button>
@@ -143,10 +180,7 @@ export const OutlookCard = ({ day }) => {
         {outlook.hail && (
           <button 
             className={selectedView === 'hail' ? 'active' : ''}
-            onClick={() => {
-              setSelectedView('hail');
-              setIsZoomed(false);
-            }}
+            onClick={() => setSelectedView('hail')}
           >
             Hail
           </button>
@@ -158,9 +192,15 @@ export const OutlookCard = ({ day }) => {
         <div className="no-image" style={{ display: 'none' }}>
           Failed to load image
         </div>
-        {!isZoomed && outlook[selectedView] && (
+        {outlook[selectedView] && (
           <div className="zoom-hint">
-            Tap to zoom • Pinch to zoom
+            Pinch to zoom
+            <button 
+              className="reset-zoom-btn"
+              onClick={() => transformRef.current?.resetTransform()}
+            >
+              Reset
+            </button>
           </div>
         )}
       </div>

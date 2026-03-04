@@ -160,8 +160,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
   position: relative;
 }
 
@@ -169,17 +167,8 @@
   max-width: 100%;
   height: auto;
   border-radius: 4px;
-  cursor: zoom-in;
-  touch-action: pan-x pan-y pinch-zoom;
-  transition: transform 0.2s ease;
-}
-
-.outlook-image.zoomed {
-  cursor: zoom-out;
-  max-width: none;
-  width: auto;
-  height: auto;
-  transform: scale(1.5);
+  display: block;
+  user-select: none;
 }
 
 .zoom-hint {
@@ -192,9 +181,27 @@
   padding: 6px 12px;
   border-radius: 4px;
   font-size: 0.85em;
-  pointer-events: none;
   opacity: 0.8;
   z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reset-zoom-btn {
+  background: rgba(74, 158, 255, 0.3);
+  border: 1px solid rgba(74, 158, 255, 0.5);
+  color: #4a9eff;
+  padding: 4px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.reset-zoom-btn:hover {
+  background: rgba(74, 158, 255, 0.5);
 }
 
 @media (max-width: 768px) {
@@ -207,10 +214,11 @@
     width: 100%;
     max-width: 100%;
     height: auto;
+    cursor: default;
   }
   
   .outlook-image.zoomed {
-    transform: scale(2);
+    transform: none;
   }
   
   .zoom-hint {
