@@ -1,8 +1,8 @@
 {
   "name": "spc-outlook-viewer",
   "private": true,
-  "version": "1.0.0",
-  "description": "Real-time Storm Prediction Center convective outlook viewer",
+  "version": "2.0.0",
+  "description": "Real-time severe weather outlook viewer for SPC convective outlooks and Nadocast ensemble forecasts",
   "type": "module",
   "scripts": {
     "dev": "vite",
