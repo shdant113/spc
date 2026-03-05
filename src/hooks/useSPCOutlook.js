@@ -23,6 +23,9 @@ export const useSPCOutlook = (day) => {
     error: null,
     isWithinWindow: false
   });
+  
+  const [loadedImages, setLoadedImages] = useState(new Set());
+  const [allImagesLoaded, setAllImagesLoaded] = useState(false);
 
   const baseUrl = 'https://www.spc.noaa.gov/partners/outlooks/national';
 
@@ -66,6 +69,8 @@ export const useSPCOutlook = (day) => {
 
   const fetchOutlooks = useCallback(async () => {
     setOutlookData(prev => ({ ...prev, loading: true, error: null }));
+    setLoadedImages(new Set());
+    setAllImagesLoaded(false);
     
     try {
       const imageUrls = getImageUrls();
@@ -97,18 +102,46 @@ export const useSPCOutlook = (day) => {
     fetchOutlooks();
   }, [fetchOutlooks]);
 
+  // Mark an image as loaded
+  const markImageLoaded = useCallback((viewType) => {
+    setLoadedImages(prev => {
+      const newSet = new Set(prev);
+      newSet.add(viewType);
+      return newSet;
+    });
+  }, []);
+  
+  // Check if all available images are loaded
+  useEffect(() => {
+    const availableViews = [];
+    if (outlookData.categorical) availableViews.push('categorical');
+    if (outlookData.tornado) availableViews.push('tornado');
+    if (outlookData.wind) availableViews.push('wind');
+    if (outlookData.hail) availableViews.push('hail');
+    
+    if (availableViews.length > 0) {
+      const allLoaded = availableViews.every(view => loadedImages.has(view));
+      if (allLoaded && !allImagesLoaded) {
+        console.log(`All Day ${day} images loaded - stopping auto-refresh`);
+        setAllImagesLoaded(true);
+      }
+    }
+  }, [loadedImages, outlookData, day, allImagesLoaded]);
+
   // Set up smart polling based on issuance schedule
   useEffect(() => {
     const refreshInterval = getRefreshInterval(day);
     
-    if (refreshInterval) {
+    if (refreshInterval && !allImagesLoaded) {
       console.log(`Auto-refresh enabled for Day ${day}: checking every ${refreshInterval / 1000}s`);
       const interval = setInterval(fetchOutlooks, refreshInterval);
       return () => clearInterval(interval);
+    } else if (allImagesLoaded) {
+      console.log(`Auto-refresh disabled for Day ${day}: all images loaded`);
     } else {
       console.log(`Auto-refresh disabled for Day ${day}: outside issuance window`);
     }
-  }, [fetchOutlooks, day]);
+  }, [fetchOutlooks, day, allImagesLoaded]);
 
   // Check window status every minute to update UI
   useEffect(() => {
@@ -124,6 +157,8 @@ export const useSPCOutlook = (day) => {
 
   return {
     ...outlookData,
-    refresh: fetchOutlooks
+    refresh: fetchOutlooks,
+    markImageLoaded,
+    allImagesLoaded
   };
 };
