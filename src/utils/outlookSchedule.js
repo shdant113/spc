@@ -1,7 +1,7 @@
 /**
  * SPC Outlook Issuance Times (UTC)
  * Day 1: 0600Z, 1300Z, 1630Z, 2000Z, 0100Z (next day)
- * Day 2: 0600Z, 1730Z
+ * Day 2: 0700Z, 1730Z
  * Day 3: 0730Z
  * Day 4-8: 1000Z (not implemented yet)
  */
@@ -15,7 +15,7 @@ const ISSUANCE_TIMES = {
     { hour: 1, minute: 0 }    // 0100Z
   ],
   2: [
-    { hour: 6, minute: 0 },   // 0600Z
+    { hour: 7, minute: 0 },   // 0700Z
     { hour: 17, minute: 30 }  // 1730Z
   ],
   3: [

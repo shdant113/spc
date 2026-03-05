@@ -23,23 +23,20 @@ export const useSPCOutlook = (day) => {
     error: null,
     isWithinWindow: false
   });
-  
-  const [loadedImages, setLoadedImages] = useState(new Set());
-  const [allImagesLoaded, setAllImagesLoaded] = useState(false);
 
   const baseUrl = 'https://www.spc.noaa.gov/partners/outlooks/national';
 
-  // Generate image URLs with timestamp to bust cache
-  const getImageUrls = useCallback(() => {
-    const timestamp = Date.now();
+  // Generate image URLs - optionally with timestamp to bust cache
+  const getImageUrls = useCallback((bustCache = false) => {
+    const cacheBuster = bustCache ? `?t=${Date.now()}` : '';
     const urls = {
-      categorical: `${baseUrl}/swody${day}.png?t=${timestamp}`
+      categorical: `${baseUrl}/swody${day}.png${cacheBuster}`
     };
     
     if (day !== 3) {
-      urls.tornado = `${baseUrl}/swody${day}_TORN.png?t=${timestamp}`;
-      urls.wind = `${baseUrl}/swody${day}_WIND.png?t=${timestamp}`;
-      urls.hail = `${baseUrl}/swody${day}_HAIL.png?t=${timestamp}`;
+      urls.tornado = `${baseUrl}/swody${day}_TORN.png${cacheBuster}`;
+      urls.wind = `${baseUrl}/swody${day}_WIND.png${cacheBuster}`;
+      urls.hail = `${baseUrl}/swody${day}_HAIL.png${cacheBuster}`;
     }
     
     return urls;
@@ -67,13 +64,11 @@ export const useSPCOutlook = (day) => {
     }
   }, [day]);
 
-  const fetchOutlooks = useCallback(async () => {
+  const fetchOutlooks = useCallback(async (bustCache = false) => {
     setOutlookData(prev => ({ ...prev, loading: true, error: null }));
-    setLoadedImages(new Set());
-    setAllImagesLoaded(false);
     
     try {
-      const imageUrls = getImageUrls();
+      const imageUrls = getImageUrls(bustCache);
       const text = await fetchText();
 
       setOutlookData({
@@ -102,46 +97,18 @@ export const useSPCOutlook = (day) => {
     fetchOutlooks();
   }, [fetchOutlooks]);
 
-  // Mark an image as loaded
-  const markImageLoaded = useCallback((viewType) => {
-    setLoadedImages(prev => {
-      const newSet = new Set(prev);
-      newSet.add(viewType);
-      return newSet;
-    });
-  }, []);
-  
-  // Check if all available images are loaded
-  useEffect(() => {
-    const availableViews = [];
-    if (outlookData.categorical) availableViews.push('categorical');
-    if (outlookData.tornado) availableViews.push('tornado');
-    if (outlookData.wind) availableViews.push('wind');
-    if (outlookData.hail) availableViews.push('hail');
-    
-    if (availableViews.length > 0) {
-      const allLoaded = availableViews.every(view => loadedImages.has(view));
-      if (allLoaded && !allImagesLoaded) {
-        console.log(`All Day ${day} images loaded - stopping auto-refresh`);
-        setAllImagesLoaded(true);
-      }
-    }
-  }, [loadedImages, outlookData, day, allImagesLoaded]);
-
   // Set up smart polling based on issuance schedule
   useEffect(() => {
     const refreshInterval = getRefreshInterval(day);
     
-    if (refreshInterval && !allImagesLoaded) {
+    if (refreshInterval) {
       console.log(`Auto-refresh enabled for Day ${day}: checking every ${refreshInterval / 1000}s`);
       const interval = setInterval(fetchOutlooks, refreshInterval);
       return () => clearInterval(interval);
-    } else if (allImagesLoaded) {
-      console.log(`Auto-refresh disabled for Day ${day}: all images loaded`);
     } else {
       console.log(`Auto-refresh disabled for Day ${day}: outside issuance window`);
     }
-  }, [fetchOutlooks, day, allImagesLoaded]);
+  }, [fetchOutlooks, day]);
 
   // Check window status every minute to update UI
   useEffect(() => {
@@ -157,8 +124,6 @@ export const useSPCOutlook = (day) => {
 
   return {
     ...outlookData,
-    refresh: fetchOutlooks,
-    markImageLoaded,
-    allImagesLoaded
+    refresh: () => fetchOutlooks(true) // Always bust cache on manual refresh
   };
 };

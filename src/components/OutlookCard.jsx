@@ -144,17 +144,12 @@ export const OutlookCard = ({ day }) => {
         </div>
         <div className="outlook-meta">
           <div className="status-info">
-            {outlook.allImagesLoaded && (
-              <span className="auto-refresh-status inactive">
-                All images loaded
-              </span>
-            )}
-            {!outlook.allImagesLoaded && outlook.isWithinWindow && (
+            {outlook.isWithinWindow && (
               <span className="auto-refresh-status active">
-                New outlook due soon. Auto-refreshing.
+                Auto-refreshing
               </span>
             )}
-            {!outlook.allImagesLoaded && !outlook.isWithinWindow && (
+            {!outlook.isWithinWindow && (
               <span className="auto-refresh-status inactive">
                 {formatNextIssuance()}
               </span>
@@ -171,42 +166,6 @@ export const OutlookCard = ({ day }) => {
 
       <div className="outlook-content">
         {renderImage()}
-        {outlook.categorical && (
-          <img 
-            src={outlook.categorical} 
-            alt="Preload categorical"
-            style={{ display: 'none' }}
-            onLoad={() => outlook.markImageLoaded('categorical')}
-            onError={() => outlook.markImageLoaded('categorical')}
-          />
-        )}
-        {outlook.tornado && (
-          <img 
-            src={outlook.tornado} 
-            alt="Preload tornado"
-            style={{ display: 'none' }}
-            onLoad={() => outlook.markImageLoaded('tornado')}
-            onError={() => outlook.markImageLoaded('tornado')}
-          />
-        )}
-        {outlook.wind && (
-          <img 
-            src={outlook.wind} 
-            alt="Preload wind"
-            style={{ display: 'none' }}
-            onLoad={() => outlook.markImageLoaded('wind')}
-            onError={() => outlook.markImageLoaded('wind')}
-          />
-        )}
-        {outlook.hail && (
-          <img 
-            src={outlook.hail} 
-            alt="Preload hail"
-            style={{ display: 'none' }}
-            onLoad={() => outlook.markImageLoaded('hail')}
-            onError={() => outlook.markImageLoaded('hail')}
-          />
-        )}
         <div className="no-image" style={{ display: 'none' }}>
           Failed to load image
         </div>
