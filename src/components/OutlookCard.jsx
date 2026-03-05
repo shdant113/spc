@@ -129,12 +129,24 @@ export const OutlookCard = ({ day }) => {
   return (
     <div className="outlook-card">
       <div className="outlook-header">
-        <h2>{getTitle()}</h2>
+        <div className="outlook-title-row">
+          <h2>{getTitle()}</h2>
+          <select 
+            value={selectedView} 
+            onChange={(e) => setSelectedView(e.target.value)}
+            className="view-selector"
+          >
+            {outlook.categorical && <option value="categorical">Categorical</option>}
+            {outlook.tornado && <option value="tornado">Tornado</option>}
+            {outlook.wind && <option value="wind">Wind</option>}
+            {outlook.hail && <option value="hail">Hail</option>}
+          </select>
+        </div>
         <div className="outlook-meta">
           <div className="status-info">
             {outlook.isWithinWindow && (
               <span className="auto-refresh-status active">
-                Auto-refreshing every 60s
+                New outlook due soon. Auto-refreshing.
               </span>
             )}
             {!outlook.isWithinWindow && (
@@ -147,44 +159,9 @@ export const OutlookCard = ({ day }) => {
             Last updated: {outlook.lastUpdated?.toLocaleTimeString()}
           </span>
           <button onClick={outlook.refresh} className="refresh-btn">
-            🔄 Refresh
+            Refresh
           </button>
         </div>
-      </div>
-
-      <div className="outlook-controls">
-        {outlook.categorical && (
-          <button 
-            className={selectedView === 'categorical' ? 'active' : ''}
-            onClick={() => setSelectedView('categorical')}
-          >
-            Categorical
-          </button>
-        )}
-        {outlook.tornado && (
-          <button 
-            className={selectedView === 'tornado' ? 'active' : ''}
-            onClick={() => setSelectedView('tornado')}
-          >
-            Tornado
-          </button>
-        )}
-        {outlook.wind && (
-          <button 
-            className={selectedView === 'wind' ? 'active' : ''}
-            onClick={() => setSelectedView('wind')}
-          >
-            Wind
-          </button>
-        )}
-        {outlook.hail && (
-          <button 
-            className={selectedView === 'hail' ? 'active' : ''}
-            onClick={() => setSelectedView('hail')}
-          >
-            Hail
-          </button>
-        )}
       </div>
 
       <div className="outlook-content">

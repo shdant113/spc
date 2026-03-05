@@ -168,17 +168,59 @@ export const NadocastCard = () => {
   return (
     <div className="outlook-card">
       <div className="outlook-header">
-        <h2>{getTitle()}</h2>
+        <div className="outlook-title-row">
+          <h2>{getTitle()}</h2>
+        </div>
+        <div className="outlook-selectors">
+          <select 
+            value={selectedModel} 
+            onChange={(e) => setSelectedModel(e.target.value)}
+            className="view-selector"
+          >
+            <option value="2022">2022 Models</option>
+            <option value="2024">2024 Models</option>
+          </select>
+          
+          <select 
+            value={selectedRun} 
+            onChange={(e) => setSelectedRun(e.target.value)}
+            className="view-selector"
+          >
+            <option value="00z">00z Run</option>
+            <option value="12z">12z Run</option>
+          </select>
+          
+          {selectedRun === '12z' && (
+            <select 
+              value={selectedDay} 
+              onChange={(e) => setSelectedDay(Number(e.target.value))}
+              className="view-selector"
+            >
+              <option value={1}>Day 1</option>
+              <option value={2}>Day 2</option>
+            </select>
+          )}
+          
+          <select 
+            value={selectedView} 
+            onChange={(e) => setSelectedView(e.target.value)}
+            className="view-selector"
+          >
+            <option value="tornado">Tornado</option>
+            <option value="wind">Wind</option>
+            <option value="hail">Hail</option>
+          </select>
+        </div>
         <div className="outlook-meta">
           <div className="status-info">
             {nadocast.isWithinWindow && !nadocast.dataLoaded && (
               <span className="auto-refresh-status active">
-                Auto-refreshing every 60s
+                Awaiting new run. Auto-refreshing.
               </span>
             )}
             {nadocast.isWithinWindow && nadocast.dataLoaded && (
               <span className="auto-refresh-status inactive">
-                Data loaded - polling stopped
+                Data loaded.
               </span>
             )}
             {!nadocast.isWithinWindow && (
@@ -188,80 +230,12 @@ export const NadocastCard = () => {
             )}
           </div>
           <span className="last-updated">
-            Last updated: {nadocast.lastUpdated?.toLocaleTimeString()}
+            {nadocast.lastUpdated?.toLocaleTimeString()}
           </span>
           <button onClick={nadocast.refresh} className="refresh-btn">
-            🔄 Refresh
+            Refresh
           </button>
         </div>
-      </div>
-
-      <div className="outlook-controls">
-        <button 
-          className={selectedModel === '2022' ? 'active' : ''}
-          onClick={() => setSelectedModel('2022')}
-        >
-          2022 Models
-        </button>
-        <button 
-          className={selectedModel === '2024' ? 'active' : ''}
-          onClick={() => setSelectedModel('2024')}
-        >
-          2024 Models
-        </button>
-      </div>
-
-      <div className="outlook-controls" style={{ marginTop: '10px' }}>
-        <button 
-          className={selectedRun === '00z' ? 'active' : ''}
-          onClick={() => setSelectedRun('00z')}
-        >
-          00z Run
-        </button>
-        <button 
-          className={selectedRun === '12z' ? 'active' : ''}
-          onClick={() => setSelectedRun('12z')}
-        >
-          12z Run
-        </button>
-      </div>
-
-      {selectedRun === '12z' && (
-        <div className="outlook-controls" style={{ marginTop: '10px' }}>
-          <button 
-            className={selectedDay === 1 ? 'active' : ''}
-            onClick={() => setSelectedDay(1)}
-          >
-            Day 1
-          </button>
-          <button 
-            className={selectedDay === 2 ? 'active' : ''}
-            onClick={() => setSelectedDay(2)}
-          >
-            Day 2
-          </button>
-        </div>
-      )}
-
-      <div className="outlook-controls" style={{ marginTop: selectedRun === '12z' ? '10px' : '0' }}>
-        <button 
-          className={selectedView === 'tornado' ? 'active' : ''}
-          onClick={() => setSelectedView('tornado')}
-        >
-          Tornado
-        </button>
-        <button 
-          className={selectedView === 'wind' ? 'active' : ''}
-          onClick={() => setSelectedView('wind')}
-        >
-          Wind
-        </button>
-        <button 
-          className={selectedView === 'hail' ? 'active' : ''}
-          onClick={() => setSelectedView('hail')}
-        >
-          Hail
-        </button>
       </div>
 
       <div className="outlook-content">

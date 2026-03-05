@@ -2,15 +2,21 @@
   background: #1a1a1a;
   border: 1px solid #333;
   border-radius: 8px;
-  padding: 20px;
+  padding: 15px;
   margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 200px);
+  min-height: 600px;
 }
 
 @media (max-width: 768px) {
   .outlook-card {
-    padding: 15px;
+    padding: 10px;
     border-radius: 0;
     margin-bottom: 0;
+    height: calc(100vh - 150px);
+    min-height: 500px;
   }
 }
 
@@ -21,28 +27,19 @@
   margin-bottom: 15px;
   flex-wrap: wrap;
   gap: 10px;
+  flex-shrink: 0;
 }
 
 @media (max-width: 768px) {
   .outlook-header {
     flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-  
-  .outlook-header h2 {
-    font-size: 1.3em;
-    width: 100%;
+    align-items: stretch;
+    gap: 10px;
+    margin-bottom: 10px;
   }
 }
 
-.outlook-header h2 {
-  margin: 0;
-  font-size: 1.5em;
-  color: #fff;
-}
-
-.outlook-meta {
+.outlook-title-row {
   display: flex;
   align-items: center;
   gap: 15px;
@@ -50,12 +47,81 @@
 }
 
 @media (max-width: 768px) {
+  .outlook-title-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  
+  .outlook-title-row h2 {
+    font-size: 1.2em;
+  }
+}
+
+.outlook-header h2 {
+  margin: 0;
+  font-size: 1.3em;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.view-selector {
+  background: #2a2a2a;
+  border: 1px solid #444;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 0.95em;
+  cursor: pointer;
+  min-width: 140px;
+  transition: all 0.2s;
+}
+
+.view-selector:hover {
+  background: #333;
+  border-color: #555;
+}
+
+.view-selector:focus {
+  outline: none;
+  border-color: #4a9eff;
+  box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.2);
+}
+
+@media (max-width: 768px) {
+  .view-selector {
+    width: 100%;
+    padding: 10px 12px;
+  }
+}
+
+.outlook-selectors {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .outlook-selectors {
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+}
+
+.outlook-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 0.85em;
+}
+
+@media (max-width: 768px) {
   .outlook-meta {
     width: 100%;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    text-align: center;
+    justify-content: space-between;
+    gap: 8px;
   }
 }
 
@@ -65,10 +131,11 @@
 }
 
 .auto-refresh-status {
-  font-size: 0.85em;
-  padding: 4px 10px;
-  border-radius: 4px;
+  font-size: 0.9em;
+  padding: 3px 8px;
+  border-radius: 3px;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .auto-refresh-status.active {
@@ -84,18 +151,20 @@
 }
 
 .last-updated {
-  font-size: 0.9em;
+  font-size: 1em;
   color: #999;
+  white-space: nowrap;
 }
 
 .refresh-btn {
   background: #2a2a2a;
   border: 1px solid #444;
   color: #fff;
-  padding: 6px 12px;
+  padding: 4px 10px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.9em;
+  font-size: 1.1em;
+  line-height: 1;
 }
 
 .refresh-btn:hover {
@@ -103,96 +172,64 @@
 }
 
 .outlook-controls {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-@media (max-width: 768px) {
-  .outlook-controls {
-    gap: 8px;
-    justify-content: space-between;
-  }
-}
-
-.outlook-controls button {
-  padding: 10px 20px;
-  background: #2a2a2a;
-  border: 1px solid #444;
-  color: #fff;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.95em;
-  transition: all 0.2s;
-}
-
-@media (max-width: 768px) {
-  .outlook-controls button {
-    flex: 1;
-    min-width: calc(50% - 4px);
-    padding: 12px 10px;
-    font-size: 0.9em;
-  }
-}
-
-.outlook-controls button:hover:not(:disabled) {
-  background: #333;
-  border-color: #555;
-}
-
-.outlook-controls button.active {
-  background: #4a9eff;
-  border-color: #4a9eff;
-}
-
-.outlook-controls button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+  display: none;
 }
 
 .outlook-content {
   background: #0a0a0a;
   border-radius: 4px;
-  padding: 20px;
-  text-align: center;
-  min-height: 400px;
+  padding: 10px;
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
+  overflow: hidden;
 }
 
 .outlook-image {
   max-width: 100%;
+  max-height: 100%;
+  width: auto;
   height: auto;
+  object-fit: contain;
   border-radius: 4px;
   display: block;
   user-select: none;
 }
 
+@media (max-width: 768px) {
+  .outlook-content {
+    padding: 5px;
+  }
+}
+
 .zoom-hint {
   position: absolute;
   bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.7);
+  right: 10px;
+  background: rgba(0, 0, 0, 0.8);
   color: #aaa;
-  padding: 6px 12px;
+  padding: 5px 10px;
   border-radius: 4px;
-  font-size: 0.85em;
-  opacity: 0.8;
+  font-size: 0.8em;
+  opacity: 0.7;
   z-index: 10;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  transition: opacity 0.2s;
+}
+
+.zoom-hint:hover {
+  opacity: 1;
 }
 
 .reset-zoom-btn {
   background: rgba(74, 158, 255, 0.3);
   border: 1px solid rgba(74, 158, 255, 0.5);
   color: #4a9eff;
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: 3px;
   cursor: pointer;
   font-size: 0.9em;
@@ -205,25 +242,11 @@
 }
 
 @media (max-width: 768px) {
-  .outlook-content {
-    padding: 10px;
-    min-height: 300px;
-  }
-  
-  .outlook-image {
-    width: 100%;
-    max-width: 100%;
-    height: auto;
-    cursor: default;
-  }
-  
-  .outlook-image.zoomed {
-    transform: none;
-  }
-  
   .zoom-hint {
-    font-size: 0.8em;
-    padding: 4px 10px;
+    font-size: 0.75em;
+    padding: 4px 8px;
+    bottom: 5px;
+    right: 5px;
   }
 }
 
@@ -239,17 +262,19 @@
 }
 
 .outlook-text {
-  margin-top: 20px;
+  margin-top: 15px;
   background: #0a0a0a;
   border-radius: 4px;
-  padding: 15px;
+  padding: 12px;
+  flex-shrink: 0;
 }
 
 .outlook-text summary {
   cursor: pointer;
   color: #4a9eff;
   font-weight: 500;
-  padding: 5px;
+  padding: 3px;
+  font-size: 0.9em;
 }
 
 .outlook-text summary:hover {
@@ -257,12 +282,14 @@
 }
 
 .outlook-text pre {
-  margin-top: 15px;
+  margin-top: 10px;
   color: #ddd;
   font-family: 'Courier New', monospace;
-  font-size: 0.9em;
-  line-height: 1.5;
+  font-size: 0.85em;
+  line-height: 1.4;
   white-space: pre-wrap;
   word-wrap: break-word;
   overflow-x: auto;
+  max-height: 200px;
+  overflow-y: auto;
 }
